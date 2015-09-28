@@ -166,7 +166,7 @@ public class BookController extends HttpServlet {
                values.add(pageCount);
                values.add(date);
                
-              bookService.updateRecord("book", columns, values, "author", author);
+              bookService.updateRecord("book", columns, values, "book_id", bookId);
               }
               
                  List<Book> books = null;
