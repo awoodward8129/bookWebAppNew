@@ -40,7 +40,8 @@
             </tr>
                <tr>
                 <td>
-            Date Published <input type="text" name="pubDate" value= "${b.pubDate}"/>
+                    
+            Date Published <input type="text" name="pubDate" value= "${pubDate}"/>
                 </td>
             </tr>
             <tr>

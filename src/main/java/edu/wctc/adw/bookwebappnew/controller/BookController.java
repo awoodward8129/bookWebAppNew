@@ -94,6 +94,7 @@ public class BookController extends HttpServlet {
             } else if (action.equals(ADD_BUTTON)) {
                destination = ADD_PAGE;}
             else if(action.equals(EDIT_DELETE_BUTTON)){
+                
                 String bookId = request.getParameter("bookId");
                 request.setAttribute("bookId", bookId);
                 String title =  request.getParameter("title");
@@ -103,6 +104,10 @@ public class BookController extends HttpServlet {
                String pageCount =  request.getParameter("pageCount");
                 request.setAttribute("pageCount", pageCount);
                  String pubDate =  request.getParameter("pubDate");
+//                  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//               Date date = new Date();
+//               date = sdf.parse(request.getParameter("pubDate"));
+//               String publishDate = date.toString();
                 request.setAttribute("pubDate", pubDate);
                 
                destination = EDIT_DELETE_PAGE;
@@ -130,8 +135,6 @@ public class BookController extends HttpServlet {
                 books = bookService.getAllBooks();
                 request.setAttribute("books", books);
            destination = LIST_PAGE;
-            } else if (action.equals("UPDATE_ACTION")) {
-                // coming soon
             } else if (action.equals(DELETE_ACTION)) {
               String submitType =request.getParameter("submit");
               if(submitType.equals("delete")){
@@ -142,8 +145,6 @@ public class BookController extends HttpServlet {
              
              
               }else if (submitType.equals("update")){
-                  
-                  
                   
                   
                     List columns= new ArrayList();
@@ -157,7 +158,7 @@ public class BookController extends HttpServlet {
                String title =  request.getParameter("title");
                String author =  request.getParameter("author");
                String pageCount =  request.getParameter("pageCount");
-               SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+               SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                Date date = new Date();
                date = sdf.parse(request.getParameter("pubDate"));
                values.add(bookId);

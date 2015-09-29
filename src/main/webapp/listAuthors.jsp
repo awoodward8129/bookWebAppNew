@@ -42,9 +42,9 @@
             <td align="left">${b.author}</td>
             <td align="left">${b.pageCount}</td>
             <td align="right">
-                <fmt:formatDate pattern="M/d/yyyy" value="${b.publishDate}"></fmt:formatDate>
+                <fmt:formatDate pattern="dd/MM/yyyy" value="${b.publishDate}"></fmt:formatDate>
             </td>
-            <td><a href="BookController?action=editDeleteButton&bookId=${b.bookId}&title=${b.title}&author=${b.author}&pageCount=${b.pageCount}&pubDate=${pubDate}">Edit or Delete</a></td>
+            <td><a href="BookController?action=editDeleteButton&bookId=${b.bookId}&title=${b.title}&author=${b.author}&pageCount=${b.pageCount}&pubDate=${b.publishDate}">Edit or Delete</a></td>
             
         </tr>
         </c:forEach>
