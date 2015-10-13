@@ -17,9 +17,21 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Book List</title>
     </head>
-    <body>
+    <body bgcolor="${color}">
+        <h1>Session Demo</h1>
+        <form method="POST" action="BookController?action=session">
+            Enter page background color (per user): <input name="color" value="" /> <br>
+            Enter font color (per application): <input name="fontColor" value="" /> <br>
+            <input name="submit" value="Submit" type="submit">
+        </form>
+        <p><a href="page2.jsp">Click here</a> to go to Page 2</p>
+        <p><a href="testsession.jsp">Click here</a> for Session Status</p>
+        <h3 style='color: ${fontColor};'>For comparison, this font color comes from application scope</h3>
+        
+        
         <h1>Book List</h1>
         <div><a href="BookController?action=addButton">Add a Book</a></div>
+        <div><a href="BookController?action=redirect">Redirect Test</a></div>
         <table width="500" border="1" cellspacing="0" cellpadding="4">
             <tr style="background-color: black;color:white;">
                 <th align="left" class="tableHead">ID</th>

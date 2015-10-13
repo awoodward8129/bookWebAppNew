@@ -8,6 +8,7 @@ package edu.wctc.adw.bookwebappnew.model;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
 
 /**
  *
@@ -18,6 +19,7 @@ public interface DbStrategy {
    void closeConnection() throws SQLException;
    List<Map<String, Object>> findAllRecords(String tableName) throws SQLException;
    void openConnection(String driverClass, String url, String userName, String password) throws Exception;
+   void openConnection(DataSource ds) throws Exception;
    void deleteRecordById(String tableName, String column, Object value) throws Exception;
    void insertRecord(String tableName, List columns, List value)throws Exception;
    void updateRecord(String tableName, List colDescriptors, List colValues, String whereField, Object whereValue)throws Exception;

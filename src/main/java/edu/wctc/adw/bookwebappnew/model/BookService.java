@@ -31,12 +31,12 @@ public class BookService {
     dao.deleteRecordById( tableName, columnName, value);
     }
     
-     public void insertRecord(String tableName, List columns, List values) throws Exception{
-    dao.insertRecord(tableName, columns, values);
+     public void insertRecord(String tableName , List values) throws Exception{
+    dao.insertRecord(tableName, values);
     }
     
-     public void updateRecord(String tableName, List colDescriptors, List colValues, String whereField, Object whereValue) throws Exception{
-     dao.updateRecord(tableName,colDescriptors, colValues, whereField, whereValue);
+     public void updateRecord(String tableName, List colValues, String whereField, Object whereValue) throws Exception{
+     dao.updateRecord(tableName, colValues, whereField, whereValue);
      }
     public static void main(String[] args) throws Exception { 
         BookService service = new BookService(new BookDAO(new MySqlDbStrategy(),"com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/book_db", "root", "admin"));
@@ -76,10 +76,10 @@ public class BookService {
          bookValues.add(book.getPageCount());
         bookValues.add(book.getPublishDate());
         
-          service.insertRecord("book", colDescription, bookValues);
-//          service.updateRecord("book ", colDescription, bookValues, "book_id", 28);
-      
-       
+//          service.insertRecord("book", colDescription, bookValues);
+////          service.updateRecord("book ", colDescription, bookValues, "book_id", 28);
+//      
+//       
           List<Book> books2 = service.getAllBooks();
        for(Book b :books2){
            System.out.println(b);

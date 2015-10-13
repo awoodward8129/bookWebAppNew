@@ -36,6 +36,7 @@
             </tr>
                <tr>
                 <td>
+                    <!-- type can be date but need to figure out how to convert it to the right format -->
             Date Published <input type="text" name="pubDate" value=""/>
                 </td>
             </tr>

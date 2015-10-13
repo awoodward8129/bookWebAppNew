@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 
 /**
  *
@@ -191,7 +192,10 @@ public class MySqlDbStrategy implements DbStrategy {
         db.closeConnection();
     }
 
+  public void openConnection(DataSource ds) throws Exception{
   
+   conn = ds.getConnection();
+  }
 
     
 }

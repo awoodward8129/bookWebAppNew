@@ -15,7 +15,7 @@ public interface DAOStrategy {
 
     List<Book> getAllBooks() throws Exception;
  void deleteRecordById(String tableName, String column, Object value) throws Exception;
-   void insertRecord(String tableName, List columns, List value)throws Exception;
-   void updateRecord(String tableName, List colDescriptors, List colValues, String whereField, Object whereValue)throws Exception;
+   void insertRecord(String tableName,  List values)throws Exception;
+   void updateRecord(String tableName, List colValues, String whereField, Object whereValue)throws Exception;
     
 }

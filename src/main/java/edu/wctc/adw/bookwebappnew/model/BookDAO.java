@@ -82,16 +82,43 @@ public class BookDAO implements DAOStrategy {
     }
     
        @Override
-    public void insertRecord(String tableName, List columns, List value) throws Exception {
+    public void insertRecord(String tableName , List values) throws Exception {
+        
+        List columns= new ArrayList();
+               columns.add("title");
+               columns.add("author");
+               columns.add("page_count");
+               columns.add("publish_date");
+               
+//                List values= new ArrayList();
+               String sweetDate = (String)values.get(3);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+               Date date = new Date();
+               date = sdf.parse(sweetDate);
+               values.remove(3);
+               values.add(date);
             db.openConnection(this.driverClass, this.url, this.userName, this.password);
-            db.insertRecord(tableName, columns, value);
+            db.insertRecord(tableName, columns, values);
             db.closeConnection();
     }
     
     @Override
-    public void updateRecord(String tableName, List colDescriptors, List colValues, String whereField, Object whereValue) throws Exception {
+    public void updateRecord(String tableName, List values, String whereField, Object whereValue) throws Exception {
            db.openConnection(this.driverClass, this.url, this.userName, this.password);
-            db.updateRecord(tableName, colDescriptors, colValues, whereField,whereValue);
+            List columns= new ArrayList();
+               columns.add("book_id");     
+               columns.add("title");
+               columns.add("author");
+               columns.add("page_count");
+               columns.add("publish_date");
+               String sweetDate = (String)values.get(4);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+               Date date = new Date();
+               date = sdf.parse(sweetDate);
+               values.remove(4);
+               values.add(date);
+           
+            db.updateRecord(tableName, columns, values, whereField,whereValue);
             db.closeConnection();
     }
     
@@ -132,7 +159,7 @@ public class BookDAO implements DAOStrategy {
         bookValues.add(book.getPublishDate());
         
 //          dao.insertRecord("book", colDescription, bookValues);
-          dao.updateRecord("book ", colDescription, bookValues, "book_id", 28);
+//          dao.updateRecord("book ", colDescription, bookValues, "book_id", 28);
       
        
           List<Book> books2 = dao.getAllBooks();
