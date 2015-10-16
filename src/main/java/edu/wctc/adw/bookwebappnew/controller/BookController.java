@@ -1,12 +1,7 @@
 package edu.wctc.adw.bookwebappnew.controller;
 
-
-import edu.wctc.adw.bookwebappnew.model.Book;
-import edu.wctc.adw.bookwebappnew.model.BookDAO;
-import edu.wctc.adw.bookwebappnew.model.BookService;
-import edu.wctc.adw.bookwebappnew.model.DAOStrategy;
-import edu.wctc.adw.bookwebappnew.model.DbStrategy;
-import edu.wctc.adw.bookwebappnew.model.MySqlDbStrategy;
+import edu.wctc.adw.bookwebappnew.entity.Book;
+import edu.wctc.adw.bookwebappnew.service.AbstractFacade;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
@@ -14,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.servlet.RequestDispatcher;
@@ -55,14 +51,9 @@ public class BookController extends HttpServlet {
     
     
         // Get init params from web.xml
-    private String driverClass;
-    private String url;
-    private String userName;
-    private String password;
-    private String dbStrategyClassName;
-    private String daoClassName;
-    private DbStrategy db;
-    private BookDAO bookDao;
+    @Inject
+   private AbstractFacade<Book> bookService;
+
     private String destination;
 
     /**
@@ -78,13 +69,9 @@ public class BookController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        
-  
-    
         String action = request.getParameter(ACTION_PARAM);
         
-        
+         Book book = null;
           HttpSession session = request.getSession();
         ServletContext ctx = request.getServletContext();
 //        
@@ -123,19 +110,7 @@ public class BookController extends HttpServlet {
         try {
             // Just for fun we'll stick an attribute in the request object
             request.setAttribute("data", 5);
-            // ... but it won't get forwarded, it will just die here because
-            // the code on line #47 doesn't forward the request object
-            
-//            out.println("It looks like I'm writing to the response but I'm not because I haven't done a flush yet.");
-            
-            // If you uncomment line #45 the redirect will fail. That's
-            // because you CANNOT redirect after writing to the response.
-            // Remember, the Container and its Servlets don't return web page files, they
-            // return data in the form of code. In this example, the data is
-            // the text in the println statement above, plus the code in page2.jsp
-            
-//            out.flush();
-            
+
             
              response.sendRedirect("redirect.jsp");
              return;
@@ -146,50 +121,16 @@ public class BookController extends HttpServlet {
             out.close();
         }
         }
-        /*
-         For now we are hard-coding the strategy objects into this
-         controller. In the future we'll auto inject them from a config
-         file. Also, the DAO opens/closes a connection on each method call,
-         which is not very efficient. In the future we'll learn how to use
-         a connection pool to improve this.
-         */
-//        DbStrategy db = new MySqlDbStrategy();
-//        BookDAO authDao
-//                = new BookDAO(db, "com.mysql.jdbc.Driver",
-//                        "jdbc:mysql://localhost:3306/book_db", "root", "admin");
-        //getparametervalues
-        //get parameter
-        //not empty author
-        //servlet lifecycle
-        //server starts -> app server starts -> app starts -> servlet constructor called-> init(httpSErvice) -> init
-
+   
         try {
-            
-            BookService bookService = injectDependenciesAndGetAuthorService();
-            /*
-             Here's what the connection pool version looks like.
-             */
-//            Context ctx = new InitialContext();
-//            DataSource ds = (DataSource)ctx.lookup("jdbc/book");
-//            AuthorDaoStrategy authDao = new ConnPoolAuthorDao(ds, new MySqlDbStrategy());
-//            AuthorService authService = new AuthorService(authDao);
-
-            /*
-             Determine what action to take based on a passed in QueryString
-             Parameter
-             */
+  
             if (action.equals(LIST_ACTION) || action.equals("session&end&list") || action.equals("session")  ) {
                 
                   if(action.equals("end")) {
             session.invalidate();
             fontColor = "black";
             ctx.setAttribute("fontColor", fontColor);
-            
-//            if(destination.equalsIgnoreCase("home")) {
-//                response.sendRedirect("index.jsp");
-//            } else {
-//                response.sendRedirect("testsession.jsp");
-//            }
+ 
         } else {
             String color = request.getParameter("color");
             // Session scope is per user
@@ -237,7 +178,8 @@ public class BookController extends HttpServlet {
         }else
                 
                 if (action.equals(ADD_BUTTON)) {
-               destination = ADD_PAGE;}
+               destination = ADD_PAGE;
+                }
           
             else if(action.equals(EDIT_DELETE_BUTTON)){
                  List values = getParameters( request);
@@ -253,37 +195,92 @@ public class BookController extends HttpServlet {
                  String pubDate =  (String)values.get(4);
                 request.setAttribute("pubDate", pubDate);
                 
+                
+//                 book = new Book(0);
+//               book.setBookId(new Integer((String)values.get(0)));
+//              book.setTitle((String)values.get(1));
+//              book.setAuthor((String)values.get(2));
+//               book.setPageCount(new Integer((String)values.get(3)));
+//                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//            Date date = new Date();
+//            date = sdf.parse((String)values.get(4));
+//              book.setPublishDate(date);
+                
                destination = EDIT_DELETE_PAGE;
                }
             else if(action.equals(ADD_ACTION)){
+                
+                    List values = getParameters( request);
+                 
+                    values.remove(0);
                
-                      List values = getParameters( request);
-                      values.remove(0);
-
-              bookService.insertRecord("book", values);
-          
+                String title =  (String)values.get(0);
+                request.setAttribute("title", title);
+                 String author =  (String)values.get(1);
+                request.setAttribute("author", author);
+               String pageCount =  (String)values.get(2);
+                request.setAttribute("pageCount", pageCount);
+                 String pubDate =  (String)values.get(3);
+                request.setAttribute("pubDate", pubDate);
+                
+                
+                 book = new Book(0);
+              book.setTitle((String)values.get(0));
+              book.setAuthor((String)values.get(1));
+               book.setPageCount(new Integer((String)values.get(2)));
+                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date();
+            date = sdf.parse((String)values.get(3));
+              book.setPublishDate(date);
+              bookService.create(book);
+             
            
            getListOfBooksWithListPageDestination(request, bookService);
            
             } else if (action.equals(DELETE_ACTION)) {
-              String submitType =request.getParameter("submit");
-              if(submitType.equals("delete")){
-                  
-             String bookId = request.getParameter("bookId");       
-             bookService.deleteByBookId("book", "book_id", bookId);
-             
-             
-              }else if (submitType.equals("update")){
-
-                   bookService.updateRecord("book", getParameters( request), "book_id", (String) getParameters( request).get(0));
-              }
-              
-             getListOfBooksWithListPageDestination(request, bookService);
                 
-            } else {
-                // no param identified in request, must be an error
-                request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
-                destination = LIST_PAGE;
+                 List values = getParameters( request);
+                 
+                String bookId = (String)values.get(0);
+                request.setAttribute("bookId", bookId);
+                String title =  (String)values.get(1);
+                request.setAttribute("title", title);
+                 String author =  (String)values.get(2);
+                request.setAttribute("author", author);
+               String pageCount =  (String)values.get(3);
+                request.setAttribute("pageCount", pageCount);
+                 String pubDate =  (String)values.get(4);
+                request.setAttribute("pubDate", pubDate);
+                
+                  book = new Book(0);
+                  book.setBookId(new Integer((String) values.get(0)));
+              book.setTitle((String)values.get(1));
+              book.setAuthor((String)values.get(2));
+               book.setPageCount(new Integer((String)values.get(3)));
+                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date();
+            date = sdf.parse((String)values.get(4));
+              book.setPublishDate(date);
+                
+                
+                
+              String submitType =request.getParameter("submit");
+                    if(submitType.equals("delete")){
+                        
+                  
+//                   book = bookService.find(new Integer(bookId));
+                   bookService.remove(book);
+                    }else if (submitType.equals("update")){
+                        
+                        
+                    bookService.edit(book);
+//                     getListOfBooksWithListPageDestination(request, bookService);
+                    }
+                   getListOfBooksWithListPageDestination(request, bookService);
+                  } else {
+                      // no param identified in request, must be an error
+                      request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
+                      destination = LIST_PAGE;
             }
             
         } catch (Exception e) {
@@ -313,60 +310,60 @@ public class BookController extends HttpServlet {
     return values;
     }
     
-    private void getListOfBooksWithListPageDestination(HttpServletRequest request, BookService bs) throws Exception{
+    private void getListOfBooksWithListPageDestination(HttpServletRequest request, AbstractFacade<Book> bs) throws Exception{
     
           List<Book> books = null;
-                books = bs.getAllBooks();
+                books = bs.findAll();
                 request.setAttribute("books", books);
                 destination = LIST_PAGE;
     }
-      private BookService injectDependenciesAndGetAuthorService() throws Exception {
-        // Use Liskov Substitution Principle and Java Reflection to
-        // instantiate the chosen DBStrategy based on the class name retrieved
-        // from web.xml
-        Class dbClass = Class.forName(dbStrategyClassName);
-        // Note that DBStrategy classes have no constructor params
-        DbStrategy db = (DbStrategy) dbClass.newInstance();
-
-            // Use Liskov Substitution Principle and Java Reflection to
-        // instantiate the chosen DAO based on the class name retrieved above.
-        // This one is trickier because the available DAO classes have
-        // different constructor params
-        DAOStrategy bookDao = null;
-        Class daoClass = Class.forName(daoClassName);
-         Constructor constructor =null;
-        try{
-     constructor = daoClass.getConstructor(new Class[]{
-            DbStrategy.class, String.class, String.class, String.class, String.class
-        });
-        }catch(NoSuchMethodException nsme){
-        
-        }
-            // This will be null if using connectin pool dao because the
-        // constructor has a different number and type of arguments
-      if (constructor != null) {
-            Object[] constructorArgs = new Object[]{
-                db, driverClass, url, userName, password
-            };
-            bookDao = (DAOStrategy) constructor
-                    .newInstance(constructorArgs);
-      }else{
-            Context ctx = new InitialContext();
-            DataSource ds = (DataSource) ctx.lookup("jdbc/book_db");
-            constructor = daoClass.getConstructor(new Class[]{
-                DataSource.class, DbStrategy.class
-            });
-            Object[] constructorArgs = new Object[]{
-                ds, db
-            };
-
-            bookDao = (DAOStrategy) constructor
-                    .newInstance(constructorArgs);
-      }
-            
-             return new BookService(bookDao);
-      }
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+//      private BookService injectDependenciesAndGetAuthorService() throws Exception {
+//        // Use Liskov Substitution Principle and Java Reflection to
+//        // instantiate the chosen DBStrategy based on the class name retrieved
+//        // from web.xml
+//        Class dbClass = Class.forName(dbStrategyClassName);
+//        // Note that DBStrategy classes have no constructor params
+//        DbStrategy db = (DbStrategy) dbClass.newInstance();
+//
+//            // Use Liskov Substitution Principle and Java Reflection to
+//        // instantiate the chosen DAO based on the class name retrieved above.
+//        // This one is trickier because the available DAO classes have
+//        // different constructor params
+//        DAOStrategy bookDao = null;
+//        Class daoClass = Class.forName(daoClassName);
+//         Constructor constructor =null;
+//        try{
+//     constructor = daoClass.getConstructor(new Class[]{
+//            DbStrategy.class, String.class, String.class, String.class, String.class
+//        });
+//        }catch(NoSuchMethodException nsme){
+//        
+//        }
+//            // This will be null if using connectin pool dao because the
+//        // constructor has a different number and type of arguments
+//      if (constructor != null) {
+//            Object[] constructorArgs = new Object[]{
+//                db, driverClass, url, userName, password
+//            };
+//            bookDao = (DAOStrategy) constructor
+//                    .newInstance(constructorArgs);
+//      }else{
+//            Context ctx = new InitialContext();
+//            DataSource ds = (DataSource) ctx.lookup("jdbc/book_db");
+//            constructor = daoClass.getConstructor(new Class[]{
+//                DataSource.class, DbStrategy.class
+//            });
+//            Object[] constructorArgs = new Object[]{
+//                ds, db
+//            };
+//
+//            bookDao = (DAOStrategy) constructor
+//                    .newInstance(constructorArgs);
+//      }
+//            
+//             return new BookService(bookDao);
+//      }
+//    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -409,12 +406,7 @@ public class BookController extends HttpServlet {
     public void init() throws ServletException {
         // Get init params from web.xml
         //I'll use getServletContext().get
-        driverClass = getServletContext().getInitParameter("driverClass");
-        url = getServletContext().getInitParameter("url");
-        userName = getServletContext().getInitParameter("userName");
-        password = getServletContext().getInitParameter("password");
-        dbStrategyClassName = this.getServletContext().getInitParameter("dbStrategy");
-        daoClassName = this.getServletContext().getInitParameter("bookDao");
+   
 
         // You can't do the Java Reflection stuff here because exceptions
         // are thrown that can't be handled by this stock init() method
