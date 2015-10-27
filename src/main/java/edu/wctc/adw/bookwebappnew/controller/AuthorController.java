@@ -2,7 +2,8 @@ package edu.wctc.adw.bookwebappnew.controller;
 
 import edu.wctc.adw.bookwebappnew.entity.Author;
 import edu.wctc.adw.bookwebappnew.entity.Book;
-import edu.wctc.adw.bookwebappnew.service.AbstractFacade;
+
+import edu.wctc.adw.bookwebappnew.service.AuthorService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The main controller for author-related activities
@@ -40,7 +43,7 @@ public class AuthorController extends HttpServlet {
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
     private static final String LIST_PAGE = "/listAuthor.jsp";
     private static final String ADD_PAGE = "/addAuthor.jsp";
-     private static final String EDIT_DELETE_PAGE = "/editDeleteBook.jsp";
+     private static final String EDIT_DELETE_PAGE = "/editDeleteAuthor.jsp";
     private static final String LIST_ACTION = "list";
     private static final String ADD_BUTTON = "addButton";
     private static final String EDIT_DELETE_BUTTON = "editDeleteButton";
@@ -51,9 +54,7 @@ public class AuthorController extends HttpServlet {
     private static final String ACTION_REDIRECT = "redirect";
     
     
-        // Get init params from web.xml
-    @Inject
-   private AbstractFacade<Author> authorService;
+
 
     private String destination;
 
@@ -72,7 +73,11 @@ public class AuthorController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String action = request.getParameter(ACTION_PARAM);
          Author author = null;
-  
+          // Get init params from web.xml
+      ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        AuthorService authorService = (AuthorService) ctx.getBean("authorService");
  
    
         try {
@@ -102,7 +107,7 @@ public class AuthorController extends HttpServlet {
             
             
               author.setDateAdded(date);
-              authorService.create(author);
+              authorService.edit(author);
              
            
            getListOfAuthorsWithListPageDestination(request, authorService);
@@ -110,19 +115,28 @@ public class AuthorController extends HttpServlet {
             }
        
 
-//          
-//            else if(action.equals(EDIT_DELETE_BUTTON)){
-//                 List values = getParameters( request);
-//                 
-//                String bookId = (String)values.get(0);
-//                request.setAttribute("bookId", bookId);
-//                String title =  (String)values.get(1);
-//                request.setAttribute("title", title);
-//               String pageCount =  (String)values.get(2);
-//                request.setAttribute("pageCount", pageCount);
-//                 String pubDate =  (String)values.get(3);
-//                request.setAttribute("pubDate", pubDate);
-//                
+          
+            else if(action.equals(EDIT_DELETE_BUTTON)){
+                    String authorId = request.getParameter("authorId");
+               String name =  request.getParameter("name");
+               String dateAdded =  request.getParameter("dateAdded");
+           
+                 
+              
+                request.setAttribute("authorId", authorId);
+               
+                request.setAttribute("name", name);
+             
+                request.setAttribute("dateAdded", dateAdded);
+         
+                author = new Author(0);
+                author.setAuthorId(new Integer(authorId));
+                author.setName(name);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date();
+            date = sdf.parse(dateAdded);
+                author.setDateAdded(date);
+                
 //                
 ////                 book = new Book(0);
 ////               book.setBookId(new Integer((String)values.get(0)));
@@ -134,36 +148,12 @@ public class AuthorController extends HttpServlet {
 ////            date = sdf.parse((String)values.get(4));
 ////              book.setPublishDate(date);
 //                
-//               destination = EDIT_DELETE_PAGE;
-//               }
-//            else if(action.equals(ADD_ACTION)){
-//                
-//                    List values = getParameters( request);
-//                 
-//                    values.remove(0);
-//               
-//                String title =  (String)values.get(0);
-//                request.setAttribute("title", title);
+               destination = EDIT_DELETE_PAGE;
+               }
 //        
-//               String pageCount =  (String)values.get(1);
-//                request.setAttribute("pageCount", pageCount);
-//                 String pubDate =  (String)values.get(2);
-//                request.setAttribute("pubDate", pubDate);
-//                
-//                 book = new Book(0);
-//              book.setTitle((String)values.get(0));
-//         
-//               book.setPageCount(new Integer((String)values.get(1)));
-//                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//            Date date = new Date();
-//            date = sdf.parse((String)values.get(2));
-//              book.setPublishDate(date);
-//              bookService.create(book);
-//             
 //           
-//           getListOfBooksWithListPageDestination(request, bookService);
-//           
-//            } else if (action.equals(DELETE_ACTION)) {
+//            } 
+            else if (action.equals(DELETE_ACTION)) {
 //                
 //                 List values = getParameters( request);
 //                 
@@ -206,7 +196,7 @@ public class AuthorController extends HttpServlet {
 //                      // no param identified in request, must be an error
 //                      request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
 //                      destination = LIST_PAGE;
-//            }
+            }
             
         } catch (Exception e) {
             request.setAttribute("errMsg", e.getCause().getMessage());
@@ -231,7 +221,7 @@ public class AuthorController extends HttpServlet {
 //    return values;
 //    }
     
-    private void getListOfAuthorsWithListPageDestination(HttpServletRequest request, AbstractFacade<Author> as) throws Exception{
+    private void getListOfAuthorsWithListPageDestination(HttpServletRequest request, AuthorService as) throws Exception{
     
           List<Author> authors = null;
                 authors = as.findAll();

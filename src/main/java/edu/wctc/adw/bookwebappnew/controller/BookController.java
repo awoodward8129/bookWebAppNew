@@ -2,7 +2,9 @@ package edu.wctc.adw.bookwebappnew.controller;
 
 import edu.wctc.adw.bookwebappnew.entity.Author;
 import edu.wctc.adw.bookwebappnew.entity.Book;
-import edu.wctc.adw.bookwebappnew.service.AbstractFacade;
+import edu.wctc.adw.bookwebappnew.service.AuthorService;
+
+import edu.wctc.adw.bookwebappnew.service.BookService;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
@@ -22,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The main controller for author-related activities
@@ -52,10 +56,11 @@ public class BookController extends HttpServlet {
     
     
         // Get init params from web.xml
-    @Inject
-    private AbstractFacade<Book> bookService;
-    @Inject
-    private AbstractFacade<Author> authorService;
+          ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        BookService bookService = (BookService) ctx.getBean("bookService");
+        AuthorService authorService = (AuthorService) ctx.getBean("authorService");
     private String destination;
 
     /**
@@ -98,13 +103,13 @@ public class BookController extends HttpServlet {
             Date date = new Date(aDate);
          
                  
-Integer id = new Integer (bookId);
-book = bookService.find(id);
+//Integer id = new Integer (bookId);
+book = bookService.findById(bookId);
              
               book.setTitle(title);
               
               
-              book.setAuthorId(authorService.find(new Integer(authorId)));
+              book.setAuthorId(authorService.findById(authorId));
                book.setPageCount(new Integer(pageCount));
                
               book.setPublishDate(date);
@@ -126,7 +131,7 @@ book = bookService.find(id);
                 String title =  request.getParameter("title");
                Integer pageCount =  new Integer(request.getParameter("pageCount"));
                 String pubDate =  request.getParameter("pubDate");
-                Integer authId = new Integer((String) request.getParameter("authorId"));
+                String authId =  request.getParameter("authorId");
                 
              SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date date = new Date(pubDate);
@@ -136,7 +141,7 @@ book = bookService.find(id);
                         book.setPageCount(pageCount);
                        book.setPublishDate(date);
                         if(authId != null) {
-                            author = authorService.find(authId);
+                            author = authorService.findById(authId);
                             book.setAuthorId(author);
                         }
                  bookService.edit(book);
@@ -153,12 +158,12 @@ book = bookService.find(id);
                 Integer authId = new Integer(authorId);
                 
          Date date = new Date(pubDate);
-                 book = bookService.find(new Integer(bookId));
+                 book = bookService.findById(bookId);
                         book.setTitle(title);
                         book.setPageCount(pageCount);
                        book.setPublishDate(date);
                         if(authId != null) {
-                            author = authorService.find(authId);
+                            author = authorService.findById(authorId);
                             book.setAuthorId(author);
                         }
                
@@ -206,7 +211,7 @@ book = bookService.find(id);
 //    return values;
 //    }
     
-    private void getListOfBooksWithListPageDestination(HttpServletRequest request, AbstractFacade<Book> bs) throws Exception{
+    private void getListOfBooksWithListPageDestination(HttpServletRequest request, BookService bs) throws Exception{
     
           List<Book> books =  books = bs.findAll();
                 request.setAttribute("books", books);
