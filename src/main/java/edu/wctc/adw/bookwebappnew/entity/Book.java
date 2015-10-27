@@ -8,11 +8,14 @@ package edu.wctc.adw.bookwebappnew.entity;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -32,7 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Book.findAll", query = "SELECT b FROM Book b"),
     @NamedQuery(name = "Book.findByBookId", query = "SELECT b FROM Book b WHERE b.bookId = :bookId"),
     @NamedQuery(name = "Book.findByTitle", query = "SELECT b FROM Book b WHERE b.title = :title"),
-    @NamedQuery(name = "Book.findByAuthor", query = "SELECT b FROM Book b WHERE b.author = :author"),
     @NamedQuery(name = "Book.findByPageCount", query = "SELECT b FROM Book b WHERE b.pageCount = :pageCount"),
     @NamedQuery(name = "Book.findByPublishDate", query = "SELECT b FROM Book b WHERE b.publishDate = :publishDate")})
 public class Book implements Serializable {
@@ -42,17 +44,17 @@ public class Book implements Serializable {
     @Basic(optional = false)
     @Column(name = "book_id")
     private Integer bookId;
-    @Size(max = 150)
+    @Size(max = 255)
     @Column(name = "title")
     private String title;
-    @Size(max = 80)
-    @Column(name = "author")
-    private String author;
     @Column(name = "page_count")
     private Integer pageCount;
     @Column(name = "publish_date")
     @Temporal(TemporalType.DATE)
     private Date publishDate;
+    @JoinColumn(name = "author_id", referencedColumnName = "author_id")
+    @ManyToOne// (cascade = CascadeType.MERGE)
+    private Author authorId;
 
     public Book() {
     }
@@ -77,14 +79,6 @@ public class Book implements Serializable {
         this.title = title;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
     public Integer getPageCount() {
         return pageCount;
     }
@@ -99,6 +93,14 @@ public class Book implements Serializable {
 
     public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
+    }
+
+    public Author getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Author authorId) {
+        this.authorId = authorId;
     }
 
     @Override

@@ -5,17 +5,19 @@
  */
 package edu.wctc.adw.bookwebappnew.service;
 
-import edu.wctc.adw.bookwebappnew.entity.Book;
+import edu.wctc.adw.bookwebappnew.entity.Author;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
  * @author Alex
  */
 @Stateless
-public class BookFacade extends AbstractFacade<Book> {
+public class AuthorFacade extends AbstractFacade<Author> {
     @PersistenceContext(unitName = "book_PU")
     private EntityManager em;
 
@@ -24,8 +26,15 @@ public class BookFacade extends AbstractFacade<Book> {
         return em;
     }
 
-    public BookFacade() {
-        super(Book.class);
+    public AuthorFacade() {
+        super(Author.class);
     }
+    //paging allows you to select a given number of records
+    public List<Author> findByName(String name){
     
+        String jpql = "Select a from Author where a.authorName = ?1";
+        Query q = getEntityManager().createQuery(jpql);
+        q.setParameter(1, name);
+        return q.getResultList();
+    }
 }

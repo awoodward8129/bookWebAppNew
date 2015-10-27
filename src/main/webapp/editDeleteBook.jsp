@@ -28,11 +28,7 @@
                    Title <input type="text" name="title" value="${title}"/>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-            Author <input type="text" name="author" value="${author}"/>
-                    </td>
-            </tr>
+             
             <tr>
                 <td>
             Page Count <input type="text" name="pageCount" value="${pageCount}"/>
@@ -42,6 +38,12 @@
                 <td>
                     
             Date Published <input type="text" name="pubDate" value= "${pubDate}"/>
+                </td>
+            </tr>
+               <tr>
+                <td>
+                    
+             Author Id<input type="text" name="authorId" value= "${authorId}"/>
                 </td>
             </tr>
             <tr>

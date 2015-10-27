@@ -24,11 +24,7 @@
                    Title <input type="text" name="title" value=""/>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-            Author <input type="text" name="author" value=""/>
-                    </td>
-            </tr>
+           
             <tr>
                 <td>
             Page Count <input type="text" name="pageCount" value=""/>
@@ -38,6 +34,12 @@
                 <td>
                     <!-- type can be date but need to figure out how to convert it to the right format -->
             Date Published <input type="text" name="pubDate" value=""/>
+                </td>
+            </tr>
+              <tr>
+                <td>
+                    <!-- type can be date but need to figure out how to convert it to the right format -->
+            Author Id <input type="text" name="authorId" value=""/>
                 </td>
             </tr>
             <tr>

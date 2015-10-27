@@ -1,0 +1,125 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package edu.wctc.adw.bookwebappnew.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author Alex
+ */
+@Entity
+@Table(name = "author")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Author.findAll", query = "SELECT a FROM Author a"),
+    @NamedQuery(name = "Author.findByAuthorId", query = "SELECT a FROM Author a WHERE a.authorId = :authorId"),
+    @NamedQuery(name = "Author.findByName", query = "SELECT a FROM Author a WHERE a.name = :name"),
+    @NamedQuery(name = "Author.findByDateAdded", query = "SELECT a FROM Author a WHERE a.dateAdded = :dateAdded")})
+public class Author implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "author_id")
+    private Integer authorId;
+    @Size(max = 100)
+    @Column(name = "name")
+    private String name;
+    @Column(name = "date_added")
+    @Temporal(TemporalType.DATE)
+    private Date dateAdded;
+    //can be accessed by book.authorId.authorId
+    //cascading is not set up by default
+    //can be set up in the mySQL
+    @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL) //orphanRemoval=true
+    //imposible to have duplicates in Sets
+    private Set<Book> bookSet;
+
+    public Author() {
+    }
+
+    public Author(Integer authorId) {
+        this.authorId = authorId;
+    }
+
+    public Integer getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Integer authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    @XmlTransient
+    public Set<Book> getBookSet() {
+        return bookSet;
+    }
+
+    public void setBookSet(Set<Book> bookSet) {
+        this.bookSet = bookSet;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (authorId != null ? authorId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Author)) {
+            return false;
+        }
+        Author other = (Author) object;
+        if ((this.authorId == null && other.authorId != null) || (this.authorId != null && !this.authorId.equals(other.authorId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "edu.wctc.adw.bookwebappnew.entity.Author[ authorId=" + authorId + " ]";
+    }
+    
+}

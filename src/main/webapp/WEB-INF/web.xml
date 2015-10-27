@@ -10,6 +10,14 @@
         <servlet-name>BookController</servlet-name>
         <url-pattern>/BookController</url-pattern>
     </servlet-mapping>
+        <servlet>
+        <servlet-name>AuthorController</servlet-name>
+        <servlet-class>edu.wctc.adw.bookwebappnew.controller.AuthorController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthorController</servlet-name>
+        <url-pattern>/AuthorController</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30

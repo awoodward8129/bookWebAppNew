@@ -1,5 +1,6 @@
 package edu.wctc.adw.bookwebappnew.controller;
 
+import edu.wctc.adw.bookwebappnew.entity.Author;
 import edu.wctc.adw.bookwebappnew.entity.Book;
 import edu.wctc.adw.bookwebappnew.service.AbstractFacade;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class BookController extends HttpServlet {
     // NO MAGIC NUMBERS!
 
     private static final String NO_PARAM_ERR_MSG = "No request parameter identified";
-    private static final String LIST_PAGE = "/listAuthors.jsp";
+    private static final String LIST_PAGE = "/listBooks.jsp";
     private static final String ADD_PAGE = "/addBook.jsp";
      private static final String EDIT_DELETE_PAGE = "/editDeleteBook.jsp";
     private static final String LIST_ACTION = "list";
@@ -52,8 +53,9 @@ public class BookController extends HttpServlet {
     
         // Get init params from web.xml
     @Inject
-   private AbstractFacade<Book> bookService;
-
+    private AbstractFacade<Book> bookService;
+    @Inject
+    private AbstractFacade<Author> authorService;
     private String destination;
 
     /**
@@ -72,196 +74,94 @@ public class BookController extends HttpServlet {
         String action = request.getParameter(ACTION_PARAM);
         
          Book book = null;
-          HttpSession session = request.getSession();
-        ServletContext ctx = request.getServletContext();
-//        
-//        String action = request.getParameter("action");
-//        String destination = request.getParameter("dest");
-        String fontColor = request.getParameter("fontColor");
-        if(action.equals("session")){
-        if(action.equals("end")) {
-            session.invalidate();
-            fontColor = "black";
-            ctx.setAttribute("fontColor", fontColor);
-            
-//            if(destination.equalsIgnoreCase("home")) {
-//                response.sendRedirect("index.jsp");
-//            } else {
-//                response.sendRedirect("testsession.jsp");
-//            }
-        } else {
-            String color = request.getParameter("color");
-            // Session scope is per user
-            session.setAttribute("color", color);
-          
-            // in JSP the ServletContext is referred to as 'application'
-            // and as applicatio-wide scope
-            if(fontColor != null && fontColor.length() > 0) {
-                ctx.setAttribute("fontColor", fontColor);
-            }
-            
-//            destination = "page2.jsp";
-        }
-        }
-        
-
-        if(action.equals(ACTION_REDIRECT)){
-         PrintWriter out = response.getWriter();
-        try {
-            // Just for fun we'll stick an attribute in the request object
-            request.setAttribute("data", 5);
-
-            
-             response.sendRedirect("redirect.jsp");
-             return;
-        
-        } catch(IllegalStateException ise) {
-            out.println("<br><br>Error: IllegalStateException. You tried to redirect after writing to the response.");
-        } finally {            
-            out.close();
-        }
-        }
+         Author author = null;
    
         try {
   
-            if (action.equals(LIST_ACTION) || action.equals("session&end&list") || action.equals("session")  ) {
-                
-                  if(action.equals("end")) {
-            session.invalidate();
-            fontColor = "black";
-            ctx.setAttribute("fontColor", fontColor);
- 
-        } else {
-            String color = request.getParameter("color");
-            // Session scope is per user
-            session.setAttribute("color", color);
-          
-            // in JSP the ServletContext is referred to as 'application'
-            // and as applicatio-wide scope
-            if(fontColor != null && fontColor.length() > 0) {
-                ctx.setAttribute("fontColor", fontColor);
-            }
-            
-//            destination = "page2.jsp";
-        }
+            if (action.equals(LIST_ACTION)  ) {
                 
                 
-                 getListOfBooksWithListPageDestination(request, bookService);
-                
-                //response.sendRedirect("/about.jsp");
-
-            } else   if(action.equals("session")){
-        if(action.equals("end")) {
-            session.invalidate();
-            fontColor = "black";
-            ctx.setAttribute("fontColor", fontColor);
-            
-//            if(destination.equalsIgnoreCase("home")) {
-//                response.sendRedirect("index.jsp");
-//            } else {
-//                response.sendRedirect("testsession.jsp");
-             getListOfBooksWithListPageDestination(request, bookService);
-//            }
-        } else {
-            String color = request.getParameter("color");
-            // Session scope is per user
-            session.setAttribute("color", color);
-          
-            // in JSP the ServletContext is referred to as 'application'
-            // and as applicatio-wide scope
-            if(fontColor != null && fontColor.length() > 0) {
-                ctx.setAttribute("fontColor", fontColor);
-            }
-            
-//            destination = "page2.jsp";
-        }
-        }else
-                
-                if (action.equals(ADD_BUTTON)) {
+      getListOfBooksWithListPageDestination(request, bookService);
+       
+        }else if (action.equals(ADD_BUTTON)) {
                destination = ADD_PAGE;
-                }
-          
-            else if(action.equals(EDIT_DELETE_BUTTON)){
-                 List values = getParameters( request);
+        } else if(action.equals(EDIT_DELETE_BUTTON)){
+
+            
+                   String bookId = request.getParameter("bookId");
+               String title =  request.getParameter("title");
+               String pageCount =  request.getParameter("pageCount");
+               String aDate = request.getParameter("pubDate");
+               String authorId = request.getParameter("authorId");
+               
+                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date(aDate);
+         
                  
-                String bookId = (String)values.get(0);
-                request.setAttribute("bookId", bookId);
-                String title =  (String)values.get(1);
+Integer id = new Integer (bookId);
+book = bookService.find(id);
+             
+              book.setTitle(title);
+              
+              
+              book.setAuthorId(authorService.find(new Integer(authorId)));
+               book.setPageCount(new Integer(pageCount));
+               
+              book.setPublishDate(date);
+              
+              
+               request.setAttribute("bookId", bookId);
+//                String title =  (String)values.get(1);
                 request.setAttribute("title", title);
-                 String author =  (String)values.get(2);
-                request.setAttribute("author", author);
-               String pageCount =  (String)values.get(3);
+                 
+//               String pageCount =  (String)values.get(2);
                 request.setAttribute("pageCount", pageCount);
-                 String pubDate =  (String)values.get(4);
-                request.setAttribute("pubDate", pubDate);
-                
-                
-//                 book = new Book(0);
-//               book.setBookId(new Integer((String)values.get(0)));
-//              book.setTitle((String)values.get(1));
-//              book.setAuthor((String)values.get(2));
-//               book.setPageCount(new Integer((String)values.get(3)));
-//                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//            Date date = new Date();
-//            date = sdf.parse((String)values.get(4));
-//              book.setPublishDate(date);
-                
-               destination = EDIT_DELETE_PAGE;
+//                 String pubDate =  (String)values.get(3);
+                request.setAttribute("pubDate", aDate);
+                request.setAttribute("authorId", authorId);
+            destination = EDIT_DELETE_PAGE;
+              
                }
             else if(action.equals(ADD_ACTION)){
+                String title =  request.getParameter("title");
+               Integer pageCount =  new Integer(request.getParameter("pageCount"));
+                String pubDate =  request.getParameter("pubDate");
+                Integer authId = new Integer((String) request.getParameter("authorId"));
                 
-                    List values = getParameters( request);
-                 
-                    values.remove(0);
-               
-                String title =  (String)values.get(0);
-                request.setAttribute("title", title);
-                 String author =  (String)values.get(1);
-                request.setAttribute("author", author);
-               String pageCount =  (String)values.get(2);
-                request.setAttribute("pageCount", pageCount);
-                 String pubDate =  (String)values.get(3);
-                request.setAttribute("pubDate", pubDate);
-                
+             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            Date date = new Date(pubDate);
                 
                  book = new Book(0);
-              book.setTitle((String)values.get(0));
-              book.setAuthor((String)values.get(1));
-               book.setPageCount(new Integer((String)values.get(2)));
-                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = new Date();
-            date = sdf.parse((String)values.get(3));
-              book.setPublishDate(date);
-              bookService.create(book);
-             
+                        book.setTitle(title);
+                        book.setPageCount(pageCount);
+                       book.setPublishDate(date);
+                        if(authId != null) {
+                            author = authorService.find(authId);
+                            book.setAuthorId(author);
+                        }
+                 bookService.edit(book);
            
-           getListOfBooksWithListPageDestination(request, bookService);
-           
-            } else if (action.equals(DELETE_ACTION)) {
+           this.getListOfBooksWithListPageDestination(request, bookService);
+            }
+            else if (action.equals(DELETE_ACTION)) {
                 
-                 List values = getParameters( request);
-                 
-                String bookId = (String)values.get(0);
-                request.setAttribute("bookId", bookId);
-                String title =  (String)values.get(1);
-                request.setAttribute("title", title);
-                 String author =  (String)values.get(2);
-                request.setAttribute("author", author);
-               String pageCount =  (String)values.get(3);
-                request.setAttribute("pageCount", pageCount);
-                 String pubDate =  (String)values.get(4);
-                request.setAttribute("pubDate", pubDate);
+                String bookId = request.getParameter("bookId");
+                     String title =  request.getParameter("title");
+               Integer pageCount =  new Integer(request.getParameter("pageCount"));
+                String pubDate =  request.getParameter("pubDate");
+                String authorId =  request.getParameter("authorId");
+                Integer authId = new Integer(authorId);
                 
-                  book = new Book(0);
-                  book.setBookId(new Integer((String) values.get(0)));
-              book.setTitle((String)values.get(1));
-              book.setAuthor((String)values.get(2));
-               book.setPageCount(new Integer((String)values.get(3)));
-                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = new Date();
-            date = sdf.parse((String)values.get(4));
-              book.setPublishDate(date);
-                
+         Date date = new Date(pubDate);
+                 book = bookService.find(new Integer(bookId));
+                        book.setTitle(title);
+                        book.setPageCount(pageCount);
+                       book.setPublishDate(date);
+                        if(authId != null) {
+                            author = authorService.find(authId);
+                            book.setAuthorId(author);
+                        }
+               
                 
                 
               String submitType =request.getParameter("submit");
@@ -293,27 +193,22 @@ public class BookController extends HttpServlet {
         dispatcher.forward(request, response);
     }
     
-    private List getParameters(HttpServletRequest request){
-            List values= new ArrayList();
-               String bookId = request.getParameter("bookId");
-               String title =  request.getParameter("title");
-               String author =  request.getParameter("author");
-               String pageCount =  request.getParameter("pageCount");
-
-               
-               String date = request.getParameter("pubDate");
-               values.add(bookId);
-               values.add(title);
-               values.add(author);
-               values.add(pageCount);
-               values.add(date);
-    return values;
-    }
+//    private List getParameters(HttpServletRequest request){
+//            List values= new ArrayList();
+//               String bookId = request.getParameter("bookId");
+//               String title =  request.getParameter("title");
+//               String pageCount =  request.getParameter("pageCount");
+//               String date = request.getParameter("pubDate");
+//               values.add(bookId);
+//               values.add(title);
+//               values.add(pageCount);
+//               values.add(date);
+//    return values;
+//    }
     
     private void getListOfBooksWithListPageDestination(HttpServletRequest request, AbstractFacade<Book> bs) throws Exception{
     
-          List<Book> books = null;
-                books = bs.findAll();
+          List<Book> books =  books = bs.findAll();
                 request.setAttribute("books", books);
                 destination = LIST_PAGE;
     }
@@ -401,16 +296,16 @@ public class BookController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-      @Override
-    public void init() throws ServletException {
-        // Get init params from web.xml
-        //I'll use getServletContext().get
-   
-
-        // You can't do the Java Reflection stuff here because exceptions
-        // are thrown that can't be handled by this stock init() method
-        // because the method signature can't be modified -- remember, you 
-        // are overriding the method.
-    }
+//
+//      @Override
+//    public void init() throws ServletException {
+//        // Get init params from web.xml
+//        //I'll use getServletContext().get
+//   
+//
+//        // You can't do the Java Reflection stuff here because exceptions
+//        // are thrown that can't be handled by this stock init() method
+//        // because the method signature can't be modified -- remember, you 
+//        // are overriding the method.
+//    }
 }
