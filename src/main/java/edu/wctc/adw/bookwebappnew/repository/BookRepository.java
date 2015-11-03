@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
- * @author jlombardo
+ * @author Alex
  */
 public interface BookRepository extends JpaRepository<Book, Integer>, Serializable {
     

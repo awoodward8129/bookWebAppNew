@@ -56,11 +56,7 @@ public class BookController extends HttpServlet {
     
     
         // Get init params from web.xml
-          ServletContext sctx = getServletContext();
-        WebApplicationContext ctx
-                = WebApplicationContextUtils.getWebApplicationContext(sctx);
-        BookService bookService = (BookService) ctx.getBean("bookService");
-        AuthorService authorService = (AuthorService) ctx.getBean("authorService");
+       
     private String destination;
 
     /**
@@ -80,6 +76,12 @@ public class BookController extends HttpServlet {
         
          Book book = null;
          Author author = null;
+         
+            ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils.getWebApplicationContext(sctx);
+        BookService bookService = (BookService) ctx.getBean("bookService");
+        AuthorService authorService = (AuthorService) ctx.getBean("authorService");
    
         try {
   
@@ -94,36 +96,14 @@ public class BookController extends HttpServlet {
 
             
                    String bookId = request.getParameter("bookId");
-               String title =  request.getParameter("title");
-               String pageCount =  request.getParameter("pageCount");
-               String aDate = request.getParameter("pubDate");
-               String authorId = request.getParameter("authorId");
-               
-                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = new Date(aDate);
-         
-                 
-//Integer id = new Integer (bookId);
+           
+//       
 book = bookService.findById(bookId);
+request.setAttribute("book", book);
+     List<Author> authors = authorService.findAll();
+        request.setAttribute("authors", authors);
              
-              book.setTitle(title);
               
-              
-              book.setAuthorId(authorService.findById(authorId));
-               book.setPageCount(new Integer(pageCount));
-               
-              book.setPublishDate(date);
-              
-              
-               request.setAttribute("bookId", bookId);
-//                String title =  (String)values.get(1);
-                request.setAttribute("title", title);
-                 
-//               String pageCount =  (String)values.get(2);
-                request.setAttribute("pageCount", pageCount);
-//                 String pubDate =  (String)values.get(3);
-                request.setAttribute("pubDate", aDate);
-                request.setAttribute("authorId", authorId);
             destination = EDIT_DELETE_PAGE;
               
                }
@@ -133,7 +113,7 @@ book = bookService.findById(bookId);
                 String pubDate =  request.getParameter("pubDate");
                 String authId =  request.getParameter("authorId");
                 
-             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date date = new Date(pubDate);
                 
                  book = new Book(0);
@@ -149,39 +129,37 @@ book = bookService.findById(bookId);
            this.getListOfBooksWithListPageDestination(request, bookService);
             }
             else if (action.equals(DELETE_ACTION)) {
-                
-                String bookId = request.getParameter("bookId");
-                     String title =  request.getParameter("title");
-               Integer pageCount =  new Integer(request.getParameter("pageCount"));
-                String pubDate =  request.getParameter("pubDate");
-                String authorId =  request.getParameter("authorId");
-                Integer authId = new Integer(authorId);
-                
-         Date date = new Date(pubDate);
-                 book = bookService.findById(bookId);
-                        book.setTitle(title);
-                        book.setPageCount(pageCount);
-                       book.setPublishDate(date);
-                        if(authId != null) {
-                            author = authorService.findById(authorId);
-                            book.setAuthorId(author);
-                        }
-               
-                
-                
-              String submitType =request.getParameter("submit");
+                    String bookId = request.getParameter("bookId");
+           
+                   book = bookService.findById(bookId);
+     
+              String submitType = request.getParameter("submit");
                     if(submitType.equals("delete")){
                         
-                  
-//                   book = bookService.find(new Integer(bookId));
+                
+                         
                    bookService.remove(book);
+                   getListOfBooksWithListPageDestination(request, bookService);
                     }else if (submitType.equals("update")){
+                        
+                            String title =  request.getParameter("title");
+               String pubDate =  request.getParameter("pubDate");
+                String authorId =  request.getParameter("authorId");
+           Date date = new Date(pubDate);
+              
+              
+             
+            
+                book.setTitle(title);
+                book.setPublishDate(date);
+               author = authorService.findById(authorId);
+               book.setAuthorId(author);
                         
                         
                     bookService.edit(book);
-//                     getListOfBooksWithListPageDestination(request, bookService);
-                    }
                    getListOfBooksWithListPageDestination(request, bookService);
+                    }
+                 
                   } else {
                       // no param identified in request, must be an error
                       request.setAttribute("errMsg", NO_PARAM_ERR_MSG);

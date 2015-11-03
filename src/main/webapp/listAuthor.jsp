@@ -38,7 +38,7 @@
                 <fmt:formatDate pattern="dd/MM/yyyy" value="${a.dateAdded}"></fmt:formatDate>
             </td>
              
-            <td><a href="AuthorController?action=editDeleteButton&authorId=${a.authorId}&title=${a.name}&addedDate=${a.dateAdded}">Edit or Delete</a></td> 
+            <td><a href="AuthorController?action=editDeleteButton&authorId=${a.authorId}">Edit or Delete</a></td> 
             
         </tr>
         </c:forEach>

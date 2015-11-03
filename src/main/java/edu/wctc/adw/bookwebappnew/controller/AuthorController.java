@@ -94,9 +94,6 @@ public class AuthorController extends HttpServlet {
                destination = ADD_PAGE;
             } else if(action.equals(ADD_ACTION)){
                 
-            
-           
-                
                  author = new Author(0);
               author.setName(request.getParameter("name"));
          
@@ -117,81 +114,43 @@ public class AuthorController extends HttpServlet {
 
           
             else if(action.equals(EDIT_DELETE_BUTTON)){
-                    String authorId = request.getParameter("authorId");
-               String name =  request.getParameter("name");
-               String dateAdded =  request.getParameter("dateAdded");
-           
-                 
-              
-                request.setAttribute("authorId", authorId);
-               
-                request.setAttribute("name", name);
+              String authorId =  request.getParameter("authorId");
              
-                request.setAttribute("dateAdded", dateAdded);
-         
-                author = new Author(0);
-                author.setAuthorId(new Integer(authorId));
-                author.setName(name);
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = new Date();
-            date = sdf.parse(dateAdded);
-                author.setDateAdded(date);
+               author = authorService.findByIdAndFetchBooksEagerly(authorId);
+               request.setAttribute("author", author);
                 
-//                
-////                 book = new Book(0);
-////               book.setBookId(new Integer((String)values.get(0)));
-////              book.setTitle((String)values.get(1));
-////              book.setAuthor((String)values.get(2));
-////               book.setPageCount(new Integer((String)values.get(3)));
-////                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-////            Date date = new Date();
-////            date = sdf.parse((String)values.get(4));
-////              book.setPublishDate(date);
-//                
+                        
                destination = EDIT_DELETE_PAGE;
                }
-//        
-//           
-//            } 
+
             else if (action.equals(DELETE_ACTION)) {
 //                
-//                 List values = getParameters( request);
-//                 
-//                String bookId = (String)values.get(0);
-//                request.setAttribute("bookId", bookId);
-//                String title =  (String)values.get(1);
-//                request.setAttribute("title", title);
-//                 
-//               String pageCount =  (String)values.get(2);
-//                request.setAttribute("pageCount", pageCount);
-//                 String pubDate =  (String)values.get(3);
-//                request.setAttribute("pubDate", pubDate);
-//                
-//                  book = new Book(0);
-//                  book.setBookId(new Integer((String) values.get(0)));
-//              book.setTitle((String)values.get(1));
-//            
-//               book.setPageCount(new Integer((String)values.get(2)));
-//                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//            Date date = new Date();
-//            date = sdf.parse((String)values.get(3));
-//              book.setPublishDate(date);
-//                
-//                
-//                
-//              String submitType =request.getParameter("submit");
-//                    if(submitType.equals("delete")){
-//                        
-//                  
-////                   book = bookService.find(new Integer(bookId));
-//                   bookService.remove(book);
-//                    }else if (submitType.equals("update")){
-//                        
-//                        
-//                    bookService.edit(book);
-////                     getListOfBooksWithListPageDestination(request, bookService);
-//                    }
-//                   getListOfBooksWithListPageDestination(request, bookService);
+                
+                    String authorId =  request.getParameter("authorId");
+             
+               author = authorService.findByIdAndFetchBooksEagerly(authorId);
+                
+                
+              String submitType =request.getParameter("submit");
+                    if(submitType.equals("delete")){
+                        
+                  
+  
+                   authorService.remove(author);
+                      getListOfAuthorsWithListPageDestination(request, authorService);
+                    }else if (submitType.equals("update")){
+                     String authorName = request.getParameter("name");
+                      String dateAdded = request.getParameter("dateAdded");
+                      Date date = new Date(dateAdded);
+                   author.setName(authorName);
+                   
+                   author.setDateAdded(date);
+                        
+                        
+                    authorService.edit(author);
+                     getListOfAuthorsWithListPageDestination(request, authorService);
+                    }
+
 //                  } else {
 //                      // no param identified in request, must be an error
 //                      request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
@@ -208,23 +167,10 @@ public class AuthorController extends HttpServlet {
         dispatcher.forward(request, response);
     }
     
-//    private List getParameters(HttpServletRequest request){
-//            List values= new ArrayList();
-//               String bookId = request.getParameter("bookId");
-//               String title =  request.getParameter("title");
-//               String pageCount =  request.getParameter("pageCount");
-//               String date = request.getParameter("pubDate");
-//               values.add(bookId);
-//               values.add(title);
-//               values.add(pageCount);
-//               values.add(date);
-//    return values;
-//    }
-    
+
     private void getListOfAuthorsWithListPageDestination(HttpServletRequest request, AuthorService as) throws Exception{
     
-          List<Author> authors = null;
-                authors = as.findAll();
+          List<Author> authors = as.findAll();
                 request.setAttribute("authors", authors);
                 destination = LIST_PAGE;
     }

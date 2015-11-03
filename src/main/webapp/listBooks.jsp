@@ -46,7 +46,7 @@
                 <fmt:formatDate pattern="dd/MM/yyyy" value="${b.publishDate}"></fmt:formatDate>
             </td>
              <td align="left">${b.authorId.name}</td>
-            <td><a href="BookController?action=editDeleteButton&bookId=${b.bookId}&title=${b.title}&pageCount=${b.pageCount}&pubDate=${b.publishDate}&authorId=${b.authorId.authorId}">Edit or Delete</a></td>
+            <td><a href="BookController?action=editDeleteButton&bookId=${b.bookId}">Edit or Delete</a></td>
             
         </tr>
         </c:forEach>

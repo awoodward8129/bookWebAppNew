@@ -12,6 +12,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -53,6 +54,7 @@ public class Author implements Serializable {
     //can be accessed by book.authorId.authorId
     //cascading is not set up by default
     //can be set up in the mySQL
+    //fetch = FetchType.EAGER added to @OneToMany global attribute o
     @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL) //orphanRemoval=true
     //imposible to have duplicates in Sets
     private Set<Book> bookSet;

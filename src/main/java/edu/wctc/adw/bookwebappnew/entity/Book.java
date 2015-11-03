@@ -55,6 +55,7 @@ public class Book implements Serializable {
     @JoinColumn(name = "author_id", referencedColumnName = "author_id")
     @ManyToOne// (cascade = CascadeType.MERGE)
     private Author authorId;
+//    private int authorId;
 
     public Book() {
     }
