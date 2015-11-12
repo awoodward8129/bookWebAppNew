@@ -98,11 +98,11 @@ public class BookController extends HttpServlet {
                    String bookId = request.getParameter("bookId");
            
 //       
-book = bookService.findById(bookId);
-request.setAttribute("book", book);
-     List<Author> authors = authorService.findAll();
-        request.setAttribute("authors", authors);
-             
+            book = bookService.findById(bookId);
+            request.setAttribute("book", book);
+                 List<Author> authors = authorService.findAll();
+                    request.setAttribute("authors", authors);
+
               
             destination = EDIT_DELETE_PAGE;
               
@@ -129,6 +129,7 @@ request.setAttribute("book", book);
            this.getListOfBooksWithListPageDestination(request, bookService);
             }
             else if (action.equals(DELETE_ACTION)) {
+                
                     String bookId = request.getParameter("bookId");
            
                    book = bookService.findById(bookId);
@@ -136,24 +137,20 @@ request.setAttribute("book", book);
               String submitType = request.getParameter("submit");
                     if(submitType.equals("delete")){
                         
-                
-                         
+                        
                    bookService.remove(book);
                    getListOfBooksWithListPageDestination(request, bookService);
                     }else if (submitType.equals("update")){
                         
-                            String title =  request.getParameter("title");
-               String pubDate =  request.getParameter("pubDate");
-                String authorId =  request.getParameter("authorId");
-           Date date = new Date(pubDate);
-              
-              
-             
-            
-                book.setTitle(title);
-                book.setPublishDate(date);
-               author = authorService.findById(authorId);
-               book.setAuthorId(author);
+                      String title =  request.getParameter("title");
+                      String pubDate =  request.getParameter("pubDate");
+                     String authorId =  request.getParameter("authorId");
+                  Date date = new Date(pubDate);
+
+                    book.setTitle(title);
+                    book.setPublishDate(date);
+                   author = authorService.findById(authorId);
+                   book.setAuthorId(author);
                         
                         
                     bookService.edit(book);
@@ -176,18 +173,7 @@ request.setAttribute("book", book);
         dispatcher.forward(request, response);
     }
     
-//    private List getParameters(HttpServletRequest request){
-//            List values= new ArrayList();
-//               String bookId = request.getParameter("bookId");
-//               String title =  request.getParameter("title");
-//               String pageCount =  request.getParameter("pageCount");
-//               String date = request.getParameter("pubDate");
-//               values.add(bookId);
-//               values.add(title);
-//               values.add(pageCount);
-//               values.add(date);
-//    return values;
-//    }
+
     
     private void getListOfBooksWithListPageDestination(HttpServletRequest request, BookService bs) throws Exception{
     
@@ -195,52 +181,7 @@ request.setAttribute("book", book);
                 request.setAttribute("books", books);
                 destination = LIST_PAGE;
     }
-//      private BookService injectDependenciesAndGetAuthorService() throws Exception {
-//        // Use Liskov Substitution Principle and Java Reflection to
-//        // instantiate the chosen DBStrategy based on the class name retrieved
-//        // from web.xml
-//        Class dbClass = Class.forName(dbStrategyClassName);
-//        // Note that DBStrategy classes have no constructor params
-//        DbStrategy db = (DbStrategy) dbClass.newInstance();
-//
-//            // Use Liskov Substitution Principle and Java Reflection to
-//        // instantiate the chosen DAO based on the class name retrieved above.
-//        // This one is trickier because the available DAO classes have
-//        // different constructor params
-//        DAOStrategy bookDao = null;
-//        Class daoClass = Class.forName(daoClassName);
-//         Constructor constructor =null;
-//        try{
-//     constructor = daoClass.getConstructor(new Class[]{
-//            DbStrategy.class, String.class, String.class, String.class, String.class
-//        });
-//        }catch(NoSuchMethodException nsme){
-//        
-//        }
-//            // This will be null if using connectin pool dao because the
-//        // constructor has a different number and type of arguments
-//      if (constructor != null) {
-//            Object[] constructorArgs = new Object[]{
-//                db, driverClass, url, userName, password
-//            };
-//            bookDao = (DAOStrategy) constructor
-//                    .newInstance(constructorArgs);
-//      }else{
-//            Context ctx = new InitialContext();
-//            DataSource ds = (DataSource) ctx.lookup("jdbc/book_db");
-//            constructor = daoClass.getConstructor(new Class[]{
-//                DataSource.class, DbStrategy.class
-//            });
-//            Object[] constructorArgs = new Object[]{
-//                ds, db
-//            };
-//
-//            bookDao = (DAOStrategy) constructor
-//                    .newInstance(constructorArgs);
-//      }
-//            
-//             return new BookService(bookDao);
-//      }
+//    
 //    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -279,16 +220,5 @@ request.setAttribute("book", book);
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-//
-//      @Override
-//    public void init() throws ServletException {
-//        // Get init params from web.xml
-//        //I'll use getServletContext().get
-//   
-//
-//        // You can't do the Java Reflection stuff here because exceptions
-//        // are thrown that can't be handled by this stock init() method
-//        // because the method signature can't be modified -- remember, you 
-//        // are overriding the method.
-//    }
+
 }

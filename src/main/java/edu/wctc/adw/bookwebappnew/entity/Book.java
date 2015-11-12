@@ -53,7 +53,7 @@ public class Book implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date publishDate;
     @JoinColumn(name = "author_id", referencedColumnName = "author_id")
-    @ManyToOne// (cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Author authorId;
 //    private int authorId;
 

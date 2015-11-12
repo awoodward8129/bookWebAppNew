@@ -10,6 +10,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -20,8 +22,14 @@
     <body >
         
         <h1>Book List</h1>
+        
+         <sec:csrfInput />
+            
+           <sec:authorize access="hasAnyRole('ROLE_MGR')"> 
         <div><a href="BookController?action=addButton">Add a Book</a></div>
-        <div><a href="BookController?action=redirect">Redirect Test</a></div>
+         </sec:authorize>
+            
+    
         <table width="500" border="1" cellspacing="0" cellpadding="4">
             <tr style="background-color: black;color:white;">
                 <th align="left" class="tableHead">ID</th>
@@ -46,8 +54,9 @@
                 <fmt:formatDate pattern="dd/MM/yyyy" value="${b.publishDate}"></fmt:formatDate>
             </td>
              <td align="left">${b.authorId.name}</td>
+                   <sec:authorize access="hasAnyRole('ROLE_MGR')"> 
             <td><a href="BookController?action=editDeleteButton&bookId=${b.bookId}">Edit or Delete</a></td>
-            
+            </sec:authorize>
         </tr>
         </c:forEach>
         </table>

@@ -55,7 +55,7 @@ public class Author implements Serializable {
     //cascading is not set up by default
     //can be set up in the mySQL
     //fetch = FetchType.EAGER added to @OneToMany global attribute o
-    @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL) //orphanRemoval=true
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "authorId", cascade = CascadeType.ALL) //orphanRemoval=true
     //imposible to have duplicates in Sets
     private Set<Book> bookSet;
 

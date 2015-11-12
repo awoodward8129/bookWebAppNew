@@ -17,8 +17,5 @@ public interface AuthorRepository extends JpaRepository<Author, Integer>, Serial
 @Query("SELECT a FROM Author a JOIN FETCH a.bookSet WHERE a.authorId = (:id)")
     public Author findByIdAndFetchBooksEagerly(@Param("id") Integer id);
     
-    //Projection query below
-    
-//    @Query("SELECT a.authorName FROM Author a")
-//    public Object[] findAllWithNameOnly();
+//public Object[] findAllWithNameOnly();
 }

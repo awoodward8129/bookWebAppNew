@@ -10,7 +10,9 @@ import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -102,7 +104,6 @@ public class AuthorController extends HttpServlet {
             Date date = new Date();
             date = sdf.parse(request.getParameter("dateAdded"));
             
-            
               author.setDateAdded(date);
               authorService.edit(author);
              
@@ -110,51 +111,58 @@ public class AuthorController extends HttpServlet {
            getListOfAuthorsWithListPageDestination(request, authorService);
            
             }
-       
-
-          
             else if(action.equals(EDIT_DELETE_BUTTON)){
               String authorId =  request.getParameter("authorId");
              
                author = authorService.findByIdAndFetchBooksEagerly(authorId);
-               request.setAttribute("author", author);
-                
-                        
+                request.setAttribute("author", author);
+              
+               if(author == null){
+               author = authorService.findById(authorId);
+//               Book book = new Book(0);
+//               book.setAuthorId(author);
+//               book.setTitle("none");
+//               book.setPageCount(400);
+//               book.setPublishDate(new Date());
+//               book.setAuthorId(author);
+//               Set<Book> bookSet = new HashSet<>();
+//               bookSet.add(book);
+//               
+//               author.setBookSet(bookSet);
+                request.setAttribute("author", author);
+               
+               }
                destination = EDIT_DELETE_PAGE;
+             
                }
 
             else if (action.equals(DELETE_ACTION)) {
-//                
-                
-                    String authorId =  request.getParameter("authorId");
-             
-               author = authorService.findByIdAndFetchBooksEagerly(authorId);
-                
-                
+             String authorId =  request.getParameter("authorId");
+             author = authorService.findByIdAndFetchBooksEagerly(authorId);
+                        if(author == null){
+               author = authorService.findById(authorId);
+                        }
+               
               String submitType =request.getParameter("submit");
                     if(submitType.equals("delete")){
                         
-                  
-  
                    authorService.remove(author);
                       getListOfAuthorsWithListPageDestination(request, authorService);
                     }else if (submitType.equals("update")){
+                        
+                        
                      String authorName = request.getParameter("name");
                       String dateAdded = request.getParameter("dateAdded");
+                  
                       Date date = new Date(dateAdded);
                    author.setName(authorName);
-                   
                    author.setDateAdded(date);
-                        
+               
                         
                     authorService.edit(author);
                      getListOfAuthorsWithListPageDestination(request, authorService);
                     }
 
-//                  } else {
-//                      // no param identified in request, must be an error
-//                      request.setAttribute("errMsg", NO_PARAM_ERR_MSG);
-//                      destination = LIST_PAGE;
             }
             
         } catch (Exception e) {
@@ -174,52 +182,7 @@ public class AuthorController extends HttpServlet {
                 request.setAttribute("authors", authors);
                 destination = LIST_PAGE;
     }
-//      private BookService injectDependenciesAndGetAuthorService() throws Exception {
-//        // Use Liskov Substitution Principle and Java Reflection to
-//        // instantiate the chosen DBStrategy based on the class name retrieved
-//        // from web.xml
-//        Class dbClass = Class.forName(dbStrategyClassName);
-//        // Note that DBStrategy classes have no constructor params
-//        DbStrategy db = (DbStrategy) dbClass.newInstance();
-//
-//            // Use Liskov Substitution Principle and Java Reflection to
-//        // instantiate the chosen DAO based on the class name retrieved above.
-//        // This one is trickier because the available DAO classes have
-//        // different constructor params
-//        DAOStrategy bookDao = null;
-//        Class daoClass = Class.forName(daoClassName);
-//         Constructor constructor =null;
-//        try{
-//     constructor = daoClass.getConstructor(new Class[]{
-//            DbStrategy.class, String.class, String.class, String.class, String.class
-//        });
-//        }catch(NoSuchMethodException nsme){
-//        
-//        }
-//            // This will be null if using connectin pool dao because the
-//        // constructor has a different number and type of arguments
-//      if (constructor != null) {
-//            Object[] constructorArgs = new Object[]{
-//                db, driverClass, url, userName, password
-//            };
-//            bookDao = (DAOStrategy) constructor
-//                    .newInstance(constructorArgs);
-//      }else{
-//            Context ctx = new InitialContext();
-//            DataSource ds = (DataSource) ctx.lookup("jdbc/book_db");
-//            constructor = daoClass.getConstructor(new Class[]{
-//                DataSource.class, DbStrategy.class
-//            });
-//            Object[] constructorArgs = new Object[]{
-//                ds, db
-//            };
-//
-//            bookDao = (DAOStrategy) constructor
-//                    .newInstance(constructorArgs);
-//      }
-//            
-//             return new BookService(bookDao);
-//      }
+
 //    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

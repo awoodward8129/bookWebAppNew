@@ -8,6 +8,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +16,12 @@
         <title>Author List Page</title>
     </head>
     <body>
-             <div><a href="AuthorController?action=addButton">Add an Author</a></div>
+          <sec:csrfInput />
+        
+          <sec:authorize access="hasAnyRole('ROLE_MGR')">
+                    <div><a href="AuthorController?action=addButton">Add an Author</a></div>
+          </sec:authorize>
+       
         <table width="500" border="1" cellspacing="0" cellpadding="4">
             <tr style="background-color: black;color:white;">
                 <th align="left" class="tableHead">ID</th>
@@ -37,9 +43,9 @@
             <td align="right">
                 <fmt:formatDate pattern="dd/MM/yyyy" value="${a.dateAdded}"></fmt:formatDate>
             </td>
-             
+            <sec:authorize access="hasAnyRole('ROLE_MGR')">
             <td><a href="AuthorController?action=editDeleteButton&authorId=${a.authorId}">Edit or Delete</a></td> 
-            
+            </sec:authorize>
         </tr>
         </c:forEach>
         </table>

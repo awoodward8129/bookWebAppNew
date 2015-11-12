@@ -36,8 +36,9 @@
                
                   </c:when>
                 </c:choose>
-                
-                  <c:choose>
+              
+
+                <c:choose>
                     <c:when test="${not empty author.bookSet}">
                         <tr>
                             <td style="background-color: black;color:white;" align="left">Books</td>
@@ -50,7 +51,14 @@
                             </td>
                         </tr>
                     </c:when>
-                  </c:choose>
+                    <c:otherwise>
+                        <tr>
+                            <td style="background-color: black;color:white;" align="left">Books</td>
+                            <td>None</td>
+                        </tr>
+                    </c:otherwise>
+                </c:choose>
+                
                    
                      <c:choose>
                     <c:when test="${not empty author}">
