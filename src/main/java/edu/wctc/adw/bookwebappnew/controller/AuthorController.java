@@ -1,30 +1,27 @@
 package edu.wctc.adw.bookwebappnew.controller;
 
 import edu.wctc.adw.bookwebappnew.entity.Author;
-import edu.wctc.adw.bookwebappnew.entity.Book;
 
 import edu.wctc.adw.bookwebappnew.service.AuthorService;
+import java.text.SimpleDateFormat;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -54,6 +51,9 @@ public class AuthorController extends HttpServlet {
     private static final String DELETE_ACTION = "delete";
     private static final String ACTION_PARAM = "action";
     private static final String ACTION_REDIRECT = "redirect";
+    private static final String AJAX_LIST_ACTION = "listAjax";
+     private static final String AJAX_FINDBY_ID = "findByIdAjax";
+
     
     
 
@@ -75,6 +75,7 @@ public class AuthorController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String action = request.getParameter(ACTION_PARAM);
          Author author = null;
+         PrintWriter out = response.getWriter();
           // Get init params from web.xml
       ServletContext sctx = getServletContext();
         WebApplicationContext ctx
@@ -83,6 +84,54 @@ public class AuthorController extends HttpServlet {
  
    
         try {
+            
+               if  (action.equals(AJAX_LIST_ACTION)){
+                    List<Author> authors = authorService.findAll();
+                    JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+
+                    authors.forEach((authorObj) -> {
+                        jsonArrayBuilder.add(
+                                Json.createObjectBuilder()
+                                .add("authorId", authorObj.getAuthorId())
+                                .add("authorName", authorObj.getName())
+                                .add("dateAdded", authorObj.getDateAdded().toString())
+                        );
+                    });
+
+                    JsonArray authorsJson = jsonArrayBuilder.build();
+                    response.setContentType("application/json");
+                    out.write(authorsJson.toString());
+                    out.flush();
+                    return; // must not continue at bottom!
+               } else if (action.equals(AJAX_FINDBY_ID))
+               {
+                    out = response.getWriter();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader br = request.getReader();
+                    try {
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            sb.append(line).append('\n');
+                        }
+                    } finally {
+                        br.close();
+                    }
+
+                    String jsonPayload = sb.toString();
+                    JsonReader reader = Json.createReader(new StringReader(jsonPayload));
+                    JsonObject authorIdObj = reader.readObject();
+                    Author authorObj = authorService.findById(authorIdObj.getString("authorId"));
+                    JsonObjectBuilder builder = Json.createObjectBuilder()
+                            .add("authorId", authorObj.getAuthorId())
+                            .add("authorName", authorObj.getName())
+                            .add("dateAdded", authorObj.getDateAdded().toString());
+
+                    JsonObject authorJson = builder.build();
+                    response.setContentType("application/json");
+                    out.write(authorJson.toString());
+                    out.flush();
+                    return;
+               } else
   
             if (action.equals(LIST_ACTION)  ) {
                 
